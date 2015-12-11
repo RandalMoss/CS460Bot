@@ -34,23 +34,23 @@ public class BotTargetingDecisioner implements Decision<AdvancedMurderBot.GameCo
         GameState.Hero me = context.getGameState().getMe();
 
         // Are there a crashed bot with mines we can take advantage of?
-        for(Mine currentMine : context.getGameState().getMines().values()) {
-            if(currentMine.getOwner() != null && currentMine.getOwner().isCrashed()) {
-
-                GameState.Hero target = currentMine.getOwner();
-                AdvancedMurderBot.DijkstraResult currentDijkstraResult =
-                        context.getDijkstraResultMap().get(target.getPos());
-                GameState.Position nextPosition = target.getPos();
-
-                while(null != currentDijkstraResult && currentDijkstraResult.getDistance() > 1) {
-                    nextPosition = currentDijkstraResult.getPrevious();
-                    currentDijkstraResult = context.getDijkstraResultMap().get(nextPosition);
-                }
-
-                logger.info("Going after a crashed bot");
-                return BotUtils.directionTowards(currentDijkstraResult.getPrevious(), nextPosition);
-            }
-        }
+//        for(Mine currentMine : context.getGameState().getMines().values()) {
+//            if(currentMine.getOwner() != null && currentMine.getOwner().isCrashed()) {
+//
+//                GameState.Hero target = currentMine.getOwner();
+//                AdvancedMurderBot.DijkstraResult currentDijkstraResult =
+//                        context.getDijkstraResultMap().get(target.getPos());
+//                GameState.Position nextPosition = target.getPos();
+//
+//                while(null != currentDijkstraResult && currentDijkstraResult.getDistance() > 1) {
+//                    nextPosition = currentDijkstraResult.getPrevious();
+//                    currentDijkstraResult = context.getDijkstraResultMap().get(nextPosition);
+//                }
+//
+//                logger.info("Going after a crashed bot");
+//                return BotUtils.directionTowards(currentDijkstraResult.getPrevious(), nextPosition);
+//            }
+//        }
 
         Set<GameState.Hero> heroesWithMines = new HashSet<>();
 

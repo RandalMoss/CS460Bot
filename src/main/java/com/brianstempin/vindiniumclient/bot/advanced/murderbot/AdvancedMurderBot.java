@@ -113,7 +113,7 @@ public class AdvancedMurderBot implements AdvancedBot {
                 botTargetingDecisioner);
         CombatEngagementDecisioner combatEngagementDecisioner = new CombatEngagementDecisioner(combatOutcomeDecisioner,
                 healDecisioner);
-        BotWellnessDecisioner botWellnessDecisioner = new BotWellnessDecisioner(enRouteLootingDecisioner, combatEngagementDecisioner);
+        BotWellnessDecisioner botWellnessDecisioner = new BotWellnessDecisioner(enRouteLootingDecisioner, combatEngagementDecisioner, cowardDecisioner);
 
         this.decisioner = botWellnessDecisioner;
 

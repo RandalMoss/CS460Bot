@@ -4,6 +4,9 @@ import com.brianstempin.vindiniumclient.bot.BotMove;
 import com.brianstempin.vindiniumclient.bot.BotUtils;
 import com.brianstempin.vindiniumclient.bot.advanced.Vertex;
 import com.brianstempin.vindiniumclient.dto.GameState;
+
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,11 +23,14 @@ public class BotWellnessDecisioner implements Decision<AdvancedMurderBot.GameCon
 
     private final Decision<AdvancedMurderBot.GameContext, BotMove> yesDecisioner;
     private final Decision<AdvancedMurderBot.GameContext, BotMove> noDecisioner;
+    private final Decision<AdvancedMurderBot.GameContext, BotMove> cowardDecisioner;
 
     public BotWellnessDecisioner(Decision<AdvancedMurderBot.GameContext, BotMove> yesDecisioner,
-                                 Decision<AdvancedMurderBot.GameContext, BotMove> noDecisioner) {
+                                 Decision<AdvancedMurderBot.GameContext, BotMove> noDecisioner,
+                                 Decision<AdvancedMurderBot.GameContext, BotMove> cowardDecisioner) {
         this.yesDecisioner = yesDecisioner;
         this.noDecisioner = noDecisioner;
+        this.cowardDecisioner = cowardDecisioner;
     }
 
     @Override
@@ -32,6 +38,7 @@ public class BotWellnessDecisioner implements Decision<AdvancedMurderBot.GameCon
 
         GameState.Hero me = context.getGameState().getMe();
         Vertex myVertex = context.getGameState().getBoardGraph().get(me.getPos());
+        Map<GameState.Position, GameState.Hero> heroesByPosition = context.getGameState().getHeroesByPosition();
 
         // Do we have money for a pub?
         if(me.getGold() < 2) {
@@ -44,20 +51,26 @@ public class BotWellnessDecisioner implements Decision<AdvancedMurderBot.GameCon
         for(Vertex currentVertex : myVertex.getAdjacentVertices()) {
             if(context.getGameState().getPubs().containsKey(
                     currentVertex.getPosition())) {
-                if(me.getLife() < 80) {
+                if(me.getLife() < 70) {
                     logger.info("Bot is next to a pub already and could use health.");
                     return BotUtils.directionTowards(me.getPos(), currentVertex.getPosition());
                 }
-
-                // Once we find a pub, we don't care about evaluating the rest
-                break;
+                GameState.Position neighboringPosition = currentVertex.getPosition();
+                if(heroesByPosition.containsKey(neighboringPosition)) {
+                    logger.info("Coward Bot activate!");
+                    return cowardDecisioner.makeDecision(context);
+                }
             }
         }
 
         // Is the bot well?
-        if(context.getGameState().getMe().getLife() >= 30) {
-            logger.info("Bot is healthy.");
-            return yesDecisioner.makeDecision(context);
+        if(context.getGameState().getMe().getLife() >= 30 && context.getGameState().getMe().getLife() <= 60) {
+            logger.info("Bot is healthy. Coward time!");
+            return cowardDecisioner.makeDecision(context);
+        }
+        else if(context.getGameState().getMe().getLife() > 60){
+        	logger.info("Lets try to get some loot!");
+        	return yesDecisioner.makeDecision(context);
         }
         else {
             logger.info("Bot is damaged.");

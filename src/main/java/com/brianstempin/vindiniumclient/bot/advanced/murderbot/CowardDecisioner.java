@@ -22,18 +22,23 @@ public class CowardDecisioner implements Decision<AdvancedMurderBot.GameContext,
 //    public CowardDecisioner(Decision<AdvancedMurderBot.GameContext, BotMove> beBraveDecisioner){
 //    	this.beBraveDecisioner = beBraveDecisioner;
 //    }
-	public BotMove makeDecision(GameContext context) {
+	public BotMove makeDecision(AdvancedMurderBot.GameContext context) {
         GameState.Position myPosition = context.getGameState().getMe().getPos();
         Map<GameState.Position, Mine> mines = context.getGameState().getMines();
         Map<GameState.Position, Hero> enemies = context.getGameState().getHeroesByPosition();
+        Map<GameState.Position, AdvancedMurderBot.DijkstraResult> dijkstraResultMap = context.getDijkstraResultMap();
+        AdvancedMurderBot.DijkstraResult nearestMineDijkstraResult = null;
         Mine bestMine = null;
         int evaluation = Integer.MAX_VALUE;
         for(Mine mine : mines.values()){
+        	if(mine.getOwner() != null && mine.getOwner().getName().equals(context.getGameState().getMe().getName())){
+        		continue;
+        	}
         	int mineEval = 0;
         	GameState.Position minePos = mine.getPosition();
         	mineEval += getEuclideanDistance(myPosition.getX(), myPosition.getY(), minePos.getX(), minePos.getY());
         	
-        	int enemyEval = 1000;
+        	int enemyEval = 100000;
         	for(Hero enemy : enemies.values()){
         		if(enemy.getPos().equals(myPosition)){ //skip us
         			continue;
@@ -45,19 +50,23 @@ public class CowardDecisioner implements Decision<AdvancedMurderBot.GameContext,
         			}
         		}
         	}
-        	mineEval += enemyEval;
+        	mineEval -= enemyEval + enemyEval;
         	if(mineEval <= evaluation){
         		bestMine = mine;
         		evaluation = mineEval;
+        		nearestMineDijkstraResult = dijkstraResultMap.get(mine.getPosition());
         	}
         }
-        if(context.getGameState().getMe().getLife() > 50) {
-            logger.info("Coward mode activate!");
-            return BotUtils.directionTowards(context.getGameState().getMe().getPos(), bestMine.getPosition());
+        
+        AdvancedMurderBot.DijkstraResult currentResult = nearestMineDijkstraResult;
+        GameState.Position currentPosition = bestMine.getPosition();
+
+        while(currentResult.getDistance() > 1) {
+            currentPosition = currentResult.getPrevious();
+            currentResult = dijkstraResultMap.get(currentPosition);
         }
-        else{
-        	return BotMove.STAY;
-        }
+        logger.info("Coward mode activate!");
+        return BotUtils.directionTowards(context.getGameState().getMe().getPos(), currentPosition);
 		
 //		return beBraveDecisioner.makeDecision(context);
 	}
