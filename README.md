@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # vindinium-client
 
 ![Build status](https://travis-ci.org/bstempi/vindinium-client.svg)
@@ -107,3 +108,6 @@ While it is absolutely an improvement over the `GameState`, it still leaves some
 
 #### Testing
 Testing the decisioners is hard.  Its tedious to go through and set up game scenarios to test each possible outcome of each decisioner.  Right now, the testing is not a good example of how a project should be tested.
+=======
+# CS460Bot
+>>>>>>> c7cad271f917070575f266e1cd926f37e3762d68
