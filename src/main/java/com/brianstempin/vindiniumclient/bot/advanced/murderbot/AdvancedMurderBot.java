@@ -102,8 +102,9 @@ public class AdvancedMurderBot implements AdvancedBot {
     public AdvancedMurderBot() {
 
         // Chain decisioners together
-        SquatDecisioner squatDecisioner = new SquatDecisioner();
-        UnattendedMineDecisioner unattendedMineDecisioner = new UnattendedMineDecisioner(squatDecisioner);
+        //SquatDecisioner squatDecisioner = new SquatDecisioner();
+        CowardDecisioner cowardDecisioner = new CowardDecisioner();
+        UnattendedMineDecisioner unattendedMineDecisioner = new UnattendedMineDecisioner(cowardDecisioner);
         BotTargetingDecisioner botTargetingDecisioner = new BotTargetingDecisioner(unattendedMineDecisioner);
         EnRouteLootingDecisioner enRouteLootingDecisioner = new EnRouteLootingDecisioner(botTargetingDecisioner);
 
