@@ -28,7 +28,7 @@ public class CowardDecisioner implements Decision<AdvancedMurderBot.GameContext,
         Map<GameState.Position, Hero> enemies = context.getGameState().getHeroesByPosition();
         Map<GameState.Position, AdvancedMurderBot.DijkstraResult> dijkstraResultMap = context.getDijkstraResultMap();
         AdvancedMurderBot.DijkstraResult nearestMineDijkstraResult = null;
-        Mine bestMine = null;
+        Mine bestMine = mines.values().iterator().next();
         int evaluation = Integer.MAX_VALUE;
         for(Mine mine : mines.values()){
         	if(mine.getOwner() != null && mine.getOwner().getName().equals(context.getGameState().getMe().getName())){
@@ -36,7 +36,7 @@ public class CowardDecisioner implements Decision<AdvancedMurderBot.GameContext,
         	}
         	int mineEval = 0;
         	GameState.Position minePos = mine.getPosition();
-        	mineEval += getEuclideanDistance(myPosition.getX(), myPosition.getY(), minePos.getX(), minePos.getY());
+        	mineEval -= getEuclideanDistance(myPosition.getX(), myPosition.getY(), minePos.getX(), minePos.getY());
         	
         	int enemyEval = 100000;
         	for(Hero enemy : enemies.values()){
@@ -50,11 +50,11 @@ public class CowardDecisioner implements Decision<AdvancedMurderBot.GameContext,
         			}
         		}
         	}
-        	mineEval -= enemyEval + enemyEval;
+        	mineEval += 10 - (enemyEval);
         	if(mineEval <= evaluation){
         		bestMine = mine;
         		evaluation = mineEval;
-        		nearestMineDijkstraResult = dijkstraResultMap.get(mine.getPosition());
+        		nearestMineDijkstraResult = dijkstraResultMap.get(bestMine.getPosition());
         	}
         }
         

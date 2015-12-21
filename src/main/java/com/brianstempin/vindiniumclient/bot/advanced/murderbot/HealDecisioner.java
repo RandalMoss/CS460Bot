@@ -59,8 +59,8 @@ public class HealDecisioner implements Decision<AdvancedMurderBot.GameContext, B
         Map<GameState.Position, Pub> pubs = context.getGameState().getPubs();
         Map<GameState.Position, Hero> enemies = context.getGameState().getHeroesByPosition();
         Map<GameState.Position, AdvancedMurderBot.DijkstraResult> dijkstraResultMap = context.getDijkstraResultMap();
-        AdvancedMurderBot.DijkstraResult nearestPubDijkstraResult = null;
-        Pub bestPub = null;
+        Pub bestPub = pubs.values().iterator().next();
+        AdvancedMurderBot.DijkstraResult nearestPubDijkstraResult = dijkstraResultMap.get(bestPub.getPosition());
         int evaluation = Integer.MAX_VALUE;
         for(Pub pub : pubs.values()){
         	int pubEval = 0;
@@ -83,7 +83,7 @@ public class HealDecisioner implements Decision<AdvancedMurderBot.GameContext, B
         	if(pubEval <= evaluation){
         		bestPub = pub;
         		evaluation = pubEval;
-        		nearestPubDijkstraResult = dijkstraResultMap.get(pub.getPosition());
+        		nearestPubDijkstraResult = dijkstraResultMap.get(bestPub.getPosition());
         	}
         }
         
